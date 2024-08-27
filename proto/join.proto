@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
+
+service JoinChord {
+  rpc Join (NodeInformation) returns (JoinChordResponse) {}
+  rpc JoinOk (AcknowledgeJoinRequest) returns (AcknowledgeJoinResponse) {}
+}
+
+message NodeInformation {
+  int32 id = 1;
+  string ip = 2;
+  int32 port = 3;
+}
+
+message JoinChordResponse {}
+
+message AcknowledgeJoinRequest {
+  NodeInformation predecessor = 1;
+  NodeInformation successor = 2;
+}
+
+message AcknowledgeJoinResponse {}
