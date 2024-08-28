@@ -5,7 +5,14 @@ option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
 
 service JoinChord {
   rpc Join (NodeInformation) returns (JoinChordResponse) {}
+}
+
+service AcknowledgeJoin {
   rpc JoinOk (AcknowledgeJoinRequest) returns (AcknowledgeJoinResponse) {}
+}
+
+service NotifyPredecessor {
+  rpc NewNode (NotifyPredecessorRequest) returns (NotifyPredecessorResponse) {}
 }
 
 message NodeInformation {
@@ -22,3 +29,10 @@ message AcknowledgeJoinRequest {
 }
 
 message AcknowledgeJoinResponse {}
+
+message NotifyPredecessorRequest {
+  string ip = 1;
+  int32 port = 2;
+}
+
+message NotifyPredecessorResponse {}
