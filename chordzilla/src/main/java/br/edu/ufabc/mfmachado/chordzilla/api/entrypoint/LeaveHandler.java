@@ -4,17 +4,16 @@ import br.edu.ufabc.mfmachado.chordzilla.core.GrpcServer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class JoinHandler {
+public class LeaveHandler {
 
     private final GrpcServer grpcServer;
 
-    public void join() {
+    public void leave() {
         try {
-            System.out.println("Joining the network");
-            grpcServer.start();
+            System.out.println("Leaving the network");
+            grpcServer.stop();
         } catch (Exception e) {
-            System.out.println("Error joining the network");
+            System.out.println("Error leaving the network");
         }
-
     }
 }
