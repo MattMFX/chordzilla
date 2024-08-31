@@ -1,4 +1,4 @@
-package br.edu.ufabc.mfmachado.chordzilla.api.entrypoint;
+package br.edu.ufabc.mfmachado.chordzilla.api;
 
 public class RetriveHandler {
 

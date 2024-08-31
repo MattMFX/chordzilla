@@ -1,4 +1,4 @@
-package br.edu.ufabc.mfmachado.chordzilla.server.joinchord.usecase.impl;
+package br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl;
 
 import br.edu.ufabc.mfmachado.chordzilla.proto.JoinChordGrpc;
 

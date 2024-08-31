@@ -1,10 +1,10 @@
-package br.edu.ufabc.mfmachado.chordzilla.api.entrypoint;
+package br.edu.ufabc.mfmachado.chordzilla.api;
 
-import br.edu.ufabc.mfmachado.chordzilla.core.GrpcServer;
+import br.edu.ufabc.mfmachado.chordzilla.core.grcp.GrpcServer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LeaveHandler {
+public class LeaveChordHandler {
 
     private final GrpcServer grpcServer;
 

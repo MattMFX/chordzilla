@@ -1,27 +1,25 @@
-package br.edu.ufabc.mfmachado.chordzilla.core;
+package br.edu.ufabc.mfmachado.chordzilla.core.grcp;
 
 import io.grpc.*;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Component
 @RequiredArgsConstructor
 public class GrpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrpcServer.class);
     private static final Integer RETRY = 3;
-
     private Server server;
+
     private final List<BindableService> services;
 
-    public void start() throws IOException, InterruptedException {
+    public void start() throws InterruptedException {
         LOGGER.info("Starting gRPC server...");
         for (int i = 0; i < RETRY; i++) {
             try {
