@@ -1,7 +1,9 @@
 package br.edu.ufabc.mfmachado.chordzilla.core;
 
 import br.edu.ufabc.mfmachado.chordzilla.core.grcp.GrpcServer;
+import br.edu.ufabc.mfmachado.chordzilla.core.grcp.GrpcServerFactory;
 import br.edu.ufabc.mfmachado.chordzilla.core.hash.HashStrategy;
+import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
 import br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl.JoinChordServiceImpl;
 import io.grpc.BindableService;
 
@@ -9,32 +11,34 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class ChordInitializerService {
 
     private final HashStrategy hashStrategy;
-    private final List<BindableService> services = List.of(
-        new JoinChordServiceImpl()
-    );
+    private final List<BindableService> services;
 
-    public ChordInitializerService(HashStrategy hashStrategy) {
+    public ChordInitializerService(HashStrategy hashStrategy, List<BindableService> services) {
         this.hashStrategy = hashStrategy;
+        this.services = services;
     }
 
     public void initialize() throws InterruptedException {
-        startChordNode();
-        startGrpcServer();
+        SelfNode node = startChordNode();
+        startGrpcServer(node.getPort());
     }
 
-    private void startGrpcServer() throws InterruptedException {
-        GrpcServer grpcServer = new GrpcServer(services);
-        grpcServer.start();
+    private void startGrpcServer(int port) throws InterruptedException {
+        GrpcServer grpcServer = GrpcServerFactory.newFactory().create();
+        grpcServer.start(port);
     }
 
-    private void startChordNode() {
-        Integer id = hashStrategy.hash(UUID.randomUUID().toString());
+    private SelfNode startChordNode() {
+        byte[] id = hashStrategy.hash(UUID.randomUUID().toString().getBytes());
         String ip = getIp();
+        int port = new Random().nextInt(1024, 49515);
+        return new SelfNode(id, ip, port);
     }
 
     // Código gerado pelo ChatGPT e adaptado

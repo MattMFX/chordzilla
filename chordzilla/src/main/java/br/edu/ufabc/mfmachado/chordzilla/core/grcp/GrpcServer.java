@@ -19,11 +19,11 @@ public class GrpcServer {
 
     private final List<BindableService> services;
 
-    public void start() throws InterruptedException {
+    public void start(int port) throws InterruptedException {
         LOGGER.info("Starting gRPC server...");
         for (int i = 0; i < RETRY; i++) {
             try {
-                startGrpcServer();
+                startGrpcServer(port);
                 break;
             } catch (IOException e) {
                 LOGGER.error("Failed to start gRPC server. Retrying...", e);
@@ -38,8 +38,7 @@ public class GrpcServer {
         }
     }
 
-    private void startGrpcServer() throws IOException {
-        int port = new Random().nextInt(1024, 49515);
+    private void startGrpcServer(int port) throws IOException {
         ServerBuilder<?> serverBuilder = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create());
         services.forEach(serverBuilder::addService);
         serverBuilder.addService(ProtoReflectionService.newInstance());

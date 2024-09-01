@@ -1,17 +1,14 @@
 package br.edu.ufabc.mfmachado.chordzilla.core.node;
 
+import lombok.Getter;
+
+@Getter
 public class ChordNode {
-    private static Integer id;
-    private static String ip;
-    private static Integer port;
-    private static NeighborNode successor;
-    private static NeighborNode predecessor;
+    private final String ip;
+    private final Integer port;
 
-    private ChordNode() {}
-
-    public static void init(Integer id, String ip, Integer port) {
-        ChordNode.id = id;
-        ChordNode.ip = ip;
-        ChordNode.port = port;
+    public ChordNode(String ip, Integer port) {
+        this.ip = ip;
+        this.port = port;
     }
 }

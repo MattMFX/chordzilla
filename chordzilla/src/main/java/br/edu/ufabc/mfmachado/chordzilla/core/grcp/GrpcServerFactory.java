@@ -14,9 +14,9 @@ public class GrpcServerFactory {
     }
 
     public GrpcServer create() {
-        List<BindableService> services = GrcpServiceListBuilder.newBuilder()
-                .addService(new JoinChordServiceImpl())
-                .build();
+        List<BindableService> services = List.of(
+                new JoinChordServiceImpl()
+        );
         return new GrpcServer(services);
     }
 }
