@@ -6,6 +6,9 @@ import io.grpc.BindableService;
 import java.util.List;
 
 public class GrpcServerFactory {
+    private List<BindableService> services;
+    private Integer port;
+
     private GrpcServerFactory() {
     }
 
@@ -13,10 +16,17 @@ public class GrpcServerFactory {
         return new GrpcServerFactory();
     }
 
+    public GrpcServerFactory withServices(List<BindableService> services) {
+        this.services = services;
+        return this;
+    }
+
+    public GrpcServerFactory withPort(Integer port) {
+        this.port = port;
+        return this;
+    }
+
     public GrpcServer create() {
-        List<BindableService> services = List.of(
-                new JoinChordServiceImpl()
-        );
-        return new GrpcServer(services);
+        return new GrpcServer(services, port);
     }
 }

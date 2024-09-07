@@ -1,5 +1,7 @@
 package br.edu.ufabc.mfmachado.chordzilla.core.hash;
 
+import java.math.BigInteger;
+
 public interface HashStrategy {
-    byte[] hash(byte[] key);
+    BigInteger hash(byte[] key);
 }

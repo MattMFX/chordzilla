@@ -9,13 +9,15 @@ import java.nio.charset.StandardCharsets;
 public class SecureHash implements HashStrategy {
 
     @Override
-    public byte[] hash(byte[] key) {
+    public BigInteger hash(byte[] key) {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
 
-        return Hashing.sha256()
+        byte[] bytes = Hashing.sha256()
                 .hashBytes(key)
                 .asBytes();
+
+        return new BigInteger(1, bytes);
     }
 }

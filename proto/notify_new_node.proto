@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "commons.proto";
+
+option java_multiple_files = true;
+option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
+
+service NotifyPredecessorNewNode {
+  rpc NewNode (NotifyPredecessorNewNodeRequest) returns (NotifyPredecessorNewNodeResponse) {}
+}
+
+message NotifyPredecessorNewNodeRequest {
+  NodeInformation newNode = 1;
+}
+
+message NotifyPredecessorNewNodeResponse {}

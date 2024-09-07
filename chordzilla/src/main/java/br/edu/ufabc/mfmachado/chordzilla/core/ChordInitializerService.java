@@ -7,6 +7,7 @@ import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
 import br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl.JoinChordServiceImpl;
 import io.grpc.BindableService;
 
+import java.math.BigInteger;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
@@ -17,28 +18,32 @@ import java.util.UUID;
 public class ChordInitializerService {
 
     private final HashStrategy hashStrategy;
-    private final List<BindableService> services;
+    private final List<BindableService> services = List.of(
+        new JoinChordServiceImpl()
+    );
 
-    public ChordInitializerService(HashStrategy hashStrategy, List<BindableService> services) {
+    public ChordInitializerService(HashStrategy hashStrategy) {
         this.hashStrategy = hashStrategy;
-        this.services = services;
     }
 
     public void initialize() throws InterruptedException {
         SelfNode node = startChordNode();
-        startGrpcServer(node.getPort());
-    }
-
-    private void startGrpcServer(int port) throws InterruptedException {
-        GrpcServer grpcServer = GrpcServerFactory.newFactory().create();
-        grpcServer.start(port);
+        startGrpcServer(node.getPort(), services);
     }
 
     private SelfNode startChordNode() {
-        byte[] id = hashStrategy.hash(UUID.randomUUID().toString().getBytes());
+        BigInteger id = hashStrategy.hash(UUID.randomUUID().toString().getBytes());
         String ip = getIp();
-        int port = new Random().nextInt(1024, 49515);
-        return new SelfNode(id, ip, port);
+        Integer port = new Random().nextInt(1024, 49515);
+        return SelfNode.init(id, ip, port);
+    }
+
+    private void startGrpcServer(int port, List<BindableService> services) throws InterruptedException {
+        GrpcServer grpcServer = GrpcServerFactory.newFactory()
+                .withServices(services)
+                .withPort(port)
+                .create();
+        grpcServer.start();
     }
 
     // Código gerado pelo ChatGPT e adaptado

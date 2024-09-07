@@ -18,8 +18,9 @@ public class GrpcServer {
     private Server server;
 
     private final List<BindableService> services;
+    private final Integer port;
 
-    public void start(int port) throws InterruptedException {
+    public void start() throws InterruptedException {
         LOGGER.info("Starting gRPC server...");
         for (int i = 0; i < RETRY; i++) {
             try {

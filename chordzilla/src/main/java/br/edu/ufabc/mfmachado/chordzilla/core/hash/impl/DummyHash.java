@@ -8,19 +8,19 @@ import java.util.Map;
 
 public class DummyHash implements HashStrategy {
     private static BigInteger incrementalId = BigInteger.ZERO;
-    private final Map<byte[], byte[]> map;
+    private final Map<byte[], BigInteger> map;
 
-    public DummyHash(Map<byte[], byte[]> hashMap) {
+    public DummyHash(Map<byte[], BigInteger> hashMap) {
         this.map = hashMap;
     }
 
     @Override
-    public byte[] hash(byte[] key) {
+    public BigInteger hash(byte[] key) {
         if (map.containsKey(key)) {
             return map.get(key);
         }
 
         incrementalId = incrementalId.add(BigInteger.ONE);
-        return incrementalId.toString().getBytes();
+        return incrementalId;
     }
 }
