@@ -10,7 +10,7 @@ service NotifyPredecessorNodeGone {
 }
 
 message NotifyPredecessorNodeGoneRequest {
-  NodeInformation departingNode = 1;
+  NodeInformation successor = 1;
 }
 
 message NotifyPredecessorNodeGoneResponse {}

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DummyHash implements HashStrategy {
-    private static BigInteger incrementalId = BigInteger.ZERO;
     private final Map<byte[], BigInteger> map;
 
     public DummyHash(Map<byte[], BigInteger> hashMap) {
@@ -20,7 +19,7 @@ public class DummyHash implements HashStrategy {
             return map.get(key);
         }
 
-        incrementalId = incrementalId.add(BigInteger.ONE);
-        return incrementalId;
+        HashStrategy secureHash = new SecureHash();
+        return secureHash.hash(key);
     }
 }

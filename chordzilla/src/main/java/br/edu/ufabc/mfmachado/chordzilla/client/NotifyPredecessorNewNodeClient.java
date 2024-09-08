@@ -3,11 +3,11 @@ package br.edu.ufabc.mfmachado.chordzilla.client;
 import br.edu.ufabc.mfmachado.chordzilla.proto.*;
 import io.grpc.Channel;
 
-public class NotifyPredecessorClient {
+public class NotifyPredecessorNewNodeClient {
     private final NotifyPredecessorNewNodeGrpc.NotifyPredecessorNewNodeBlockingStub blockingStub;
     private final NotifyPredecessorNewNodeGrpc.NotifyPredecessorNewNodeStub asyncStub;
 
-    public NotifyPredecessorClient(Channel channel) {
+    public NotifyPredecessorNewNodeClient(Channel channel) {
         this.blockingStub = NotifyPredecessorNewNodeGrpc.newBlockingStub(channel);
         this.asyncStub = NotifyPredecessorNewNodeGrpc.newStub(channel);
     }

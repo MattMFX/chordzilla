@@ -3,17 +3,13 @@ package br.edu.ufabc.mfmachado.chordzilla.core.grcp;
 import io.grpc.*;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class GrpcServer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GrpcServer.class);
     private static final Integer RETRY = 3;
     private Server server;
 
@@ -21,16 +17,26 @@ public class GrpcServer {
     private final Integer port;
 
     public void start() throws InterruptedException {
-        LOGGER.info("Starting gRPC server...");
+        System.out.println("Starting gRPC server...");
         for (int i = 0; i < RETRY; i++) {
             try {
                 startGrpcServer(port);
                 break;
             } catch (IOException e) {
-                LOGGER.error("Failed to start gRPC server. Retrying...", e);
+                System.err.println("Failed to start gRPC server: " + e.getMessage() + ". Retrying...");
             }
         }
         server.awaitTermination();
+    }
+
+    public void startAsync() {
+        new Thread(() -> {
+            try {
+                this.start();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     public void stop() throws InterruptedException {
@@ -46,7 +52,7 @@ public class GrpcServer {
         this.server = serverBuilder.build();
         server.start();
         stopServerOnApplicationShutdown();
-        LOGGER.info("The gRPC server started! Listening on port {}", port);
+        System.out.println("The gRPC server started! Listening on port " + port);
     }
 
     private void stopServerOnApplicationShutdown() {

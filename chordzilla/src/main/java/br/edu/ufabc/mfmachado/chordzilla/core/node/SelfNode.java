@@ -3,14 +3,14 @@ package br.edu.ufabc.mfmachado.chordzilla.core.node;
 import lombok.Getter;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
-@Getter
-public class SelfNode {
+public class SelfNode implements Node {
     private final BigInteger id = InternalNode.id;
     private final String ip = InternalNode.ip;
     private final Integer port = InternalNode.port;
-    private final ChordNode successor = InternalNode.successor;
-    private final ChordNode predecessor = InternalNode.predecessor;
+    private Node successor = InternalNode.successor;
+    private Node predecessor = InternalNode.predecessor;
     
     private SelfNode() {
     }
@@ -38,21 +38,77 @@ public class SelfNode {
      * 1b: O ID do nó que está entrando na rede é maior que o ID do nó predecessor.
      */
     public Boolean isOwner(BigInteger key) {
-        boolean predecessorIdIsLessThanId = this.predecessor.getId().compareTo(this.id) < 0;
+        if (Objects.isNull(this.predecessor) && Objects.isNull(this.successor)) {
+            return true;
+        }
+
+        boolean predecessorIdIsLessThanId = this.predecessor.id().compareTo(this.id) < 0;
         boolean keyIsGreaterThanId = key.compareTo(this.id) >= 0;
-        boolean selfIsFirstNode = key.compareTo(this.predecessor.getId()) < 0;
+        boolean selfIsFirstNode = key.compareTo(this.predecessor.id()) < 0;
 
 
         return (keyIsGreaterThanId && predecessorIdIsLessThanId)
                 || (selfIsFirstNode && (keyIsGreaterThanId || predecessorIdIsLessThanId));
     }
 
-    private static class InternalNode {
+    @Override
+    public BigInteger id() {
+        return this.id;
+    }
+
+    @Override
+    public String ip() {
+        return this.ip;
+    }
+
+    @Override
+    public Integer port() {
+        return this.port;
+    }
+
+    public Node getPredecessor() {
+        if (Objects.nonNull(InternalNode.predecessor) && !InternalNode.predecessor.equals(this.predecessor)) {
+            this.predecessor = InternalNode.predecessor;
+        }
+        return this.predecessor;
+    }
+
+    public Node getSuccessor() {
+        if (Objects.nonNull(InternalNode.successor) && !InternalNode.successor.equals(this.successor)) {
+            this.successor = InternalNode.successor;
+        }
+        return this.successor;
+    }
+
+    public void setPredecessor(Node predecessor) {
+        InternalNode.predecessor = predecessor;
+    }
+
+    public void setSuccessor(Node successor) {
+        InternalNode.successor = successor;
+    }
+
+    private static class InternalNode implements Node {
         private static BigInteger id;
         private static String ip;
         private static Integer port;
-        private static ChordNode successor;
-        private static ChordNode predecessor;
+        private static Node successor;
+        private static Node predecessor;
+
+        @Override
+        public BigInteger id() {
+            return id;
+        }
+
+        @Override
+        public String ip() {
+            return ip;
+        }
+
+        @Override
+        public Integer port() {
+            return port;
+        }
     }
 }
 
