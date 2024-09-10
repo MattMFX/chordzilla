@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
+
+service DisplayChord {
+  rpc Display (DisplayChordRequest) returns (DisplayChordResponse) {}
+}
+
+message DisplayChordRequest {
+  repeated string id = 1;
+}
+
+message DisplayChordResponse {
+}

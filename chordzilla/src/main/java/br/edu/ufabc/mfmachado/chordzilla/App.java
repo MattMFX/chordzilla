@@ -1,11 +1,14 @@
 package br.edu.ufabc.mfmachado.chordzilla;
 
+import br.edu.ufabc.mfmachado.chordzilla.api.JoinChordHandler;
+import br.edu.ufabc.mfmachado.chordzilla.api.LeaveChordHandler;
 import br.edu.ufabc.mfmachado.chordzilla.api.StoreHandler;
-import br.edu.ufabc.mfmachado.chordzilla.client.JoinChordClient;
+import br.edu.ufabc.mfmachado.chordzilla.api.factory.JoinChordHandlerFactory;
+import br.edu.ufabc.mfmachado.chordzilla.client.*;
 import br.edu.ufabc.mfmachado.chordzilla.core.ChordInitializerService;
+import br.edu.ufabc.mfmachado.chordzilla.core.hash.HashType;
 import br.edu.ufabc.mfmachado.chordzilla.core.hash.impl.DummyHash;
-import br.edu.ufabc.mfmachado.chordzilla.core.hash.impl.SecureHash;
-import br.edu.ufabc.mfmachado.chordzilla.core.node.Node;
+import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
 import br.edu.ufabc.mfmachado.chordzilla.proto.NodeInformation;
 import br.edu.ufabc.mfmachado.chordzilla.server.utils.NodeUtils;
 import io.grpc.Channel;
@@ -14,9 +17,6 @@ import io.grpc.InsecureChannelCredentials;
 
 import java.io.Console;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 public class App {
@@ -28,33 +28,34 @@ public class App {
                 "archive4".getBytes(), new BigInteger("4"),
                 "archive5".getBytes(), new BigInteger("5")
         );
-        ChordInitializerService chordInitializerService = new ChordInitializerService(new DummyHash(hashes));
-
-        try {
-            chordInitializerService.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
 
         Console console = System.console();
-        String cmd = console.readLine("Enter a command: ");
+        while (true) {
+            String cmd = console.readLine("Enter a command: ");
+            if (cmd.equals("join")) {
+                String targetIp = console.readLine("Enter the target ip: ");
+                String targetPort = console.readLine("Enter the target port: ");
 
-        if (cmd.equals("join")) {
-            String id = console.readLine("Enter the id: ");
-            String ip = console.readLine("Enter the ip: ");
-            String port = console.readLine("Enter the port: ");
-            String targetIp = console.readLine("Enter the target ip: ");
-            String targetPort = console.readLine("Enter the target port: ");
-
-            Channel channel = Grpc.newChannelBuilder(NodeUtils.getNodeAdress(targetIp, Integer.parseInt(targetPort)), InsecureChannelCredentials.create()).build();
-            JoinChordClient joinChordClient = new JoinChordClient(channel);
-            joinChordClient.join(NodeInformation.newBuilder()
-                    .setId(id)
-                    .setIp(ip)
-                    .setPort(Integer.parseInt(port))
-                    .build()
-            );
+                JoinChordHandler joinChordHandler = JoinChordHandlerFactory.newFactory()
+                        .withHashStrategy(HashType.DUMMYHASH)
+                        .withMappings(hashes)
+                        .create();
+                joinChordHandler.join(targetIp, Integer.parseInt(targetPort));
+            } else if (cmd.equals("display")) {
+                SelfNode selfNode = SelfNode.getInstance();
+                Channel channel = Grpc.newChannelBuilder(NodeUtils.getNodeAdress(selfNode.ip(), selfNode.port()), InsecureChannelCredentials.create()).build();
+                DisplayChordClient client = new DisplayChordClient(channel);
+                client.display();
+            } else if (cmd.equals("leave")) {
+                LeaveChordHandler leaveChordHandler = new LeaveChordHandler();
+                leaveChordHandler.leave();
+            } else if (cmd.equals("store")) {
+                String key = console.readLine("Enter the key: ");
+                String value = console.readLine("Enter the value: ");
+                StoreHandler storeHandler = new StoreHandler();
+                storeHandler.store(key, value.getBytes());
+            }
         }
+
     }
 }

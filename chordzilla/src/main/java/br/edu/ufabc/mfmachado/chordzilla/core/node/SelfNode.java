@@ -1,11 +1,14 @@
 package br.edu.ufabc.mfmachado.chordzilla.core.node;
 
-import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.Objects;
+import java.util.*;
 
 public class SelfNode implements Node {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SelfNode.class);
+
     private final BigInteger id = InternalNode.id;
     private final String ip = InternalNode.ip;
     private final Integer port = InternalNode.port;
@@ -21,9 +24,11 @@ public class SelfNode implements Node {
 
     public static SelfNode init(BigInteger id, String ip, Integer port) {
         if (InternalNode.id != null || InternalNode.ip != null || InternalNode.port != null) {
-            throw new IllegalStateException("Node already initialized");
+            LOGGER.info("Node already initialized. Returning existing instance.");
+            return getInstance();
         }
 
+        InternalNode.data = new HashMap<>();
         InternalNode.id = id;
         InternalNode.ip = ip;
         InternalNode.port = port;
@@ -42,13 +47,12 @@ public class SelfNode implements Node {
             return true;
         }
 
-        boolean predecessorIdIsLessThanId = this.predecessor.id().compareTo(this.id) < 0;
-        boolean keyIsGreaterThanId = key.compareTo(this.id) >= 0;
-        boolean selfIsFirstNode = key.compareTo(this.predecessor.id()) < 0;
+        boolean selfIsFirstNode = this.id.compareTo(this.predecessor.id()) < 0;
+        boolean idIsGreaterThanKey = this.id.compareTo(key) >= 0;
+        boolean predecessorIdIsLessThanKey = this.predecessor.id().compareTo(key) < 0;
 
-
-        return (keyIsGreaterThanId && predecessorIdIsLessThanId)
-                || (selfIsFirstNode && (keyIsGreaterThanId || predecessorIdIsLessThanId));
+        return (idIsGreaterThanKey && predecessorIdIsLessThanKey)
+                || (selfIsFirstNode && (idIsGreaterThanKey || predecessorIdIsLessThanKey));
     }
 
     @Override
@@ -82,13 +86,28 @@ public class SelfNode implements Node {
 
     public void setPredecessor(Node predecessor) {
         InternalNode.predecessor = predecessor;
+        this.predecessor = InternalNode.predecessor;
     }
 
     public void setSuccessor(Node successor) {
         InternalNode.successor = successor;
+        this.successor = InternalNode.successor;
+    }
+
+    public void addData(BigInteger key, byte[] value) {
+        InternalNode.data.put(key, value);
+    }
+
+    public byte[] popData(BigInteger key) {
+        return InternalNode.data.remove(key);
+    }
+
+    public List<BigInteger> getKeys() {
+        return new ArrayList<>(InternalNode.data.keySet());
     }
 
     private static class InternalNode implements Node {
+        private static Map<BigInteger, byte[]> data;
         private static BigInteger id;
         private static String ip;
         private static Integer port;

@@ -5,6 +5,7 @@ import br.edu.ufabc.mfmachado.chordzilla.core.hash.HashStrategy;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class DummyHash implements HashStrategy {
     private final Map<byte[], BigInteger> map;
@@ -19,7 +20,6 @@ public class DummyHash implements HashStrategy {
             return map.get(key);
         }
 
-        HashStrategy secureHash = new SecureHash();
-        return secureHash.hash(key);
+        return new BigInteger(String.valueOf(new Random().nextInt(1000)));
     }
 }

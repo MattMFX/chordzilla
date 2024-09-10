@@ -20,7 +20,7 @@ public class NodeUtils {
                 .build();
     }
 
-    public static ChordNode mapToChordNode(NodeInformation nodeInformation) {
+    public static ChordNode mapToNode(NodeInformation nodeInformation) {
         return new ChordNode(
                 new BigInteger(nodeInformation.getId()),
                 nodeInformation.getIp(),

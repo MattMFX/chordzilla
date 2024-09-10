@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "commons.proto";
+
+option java_multiple_files = true;
+option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
+
+service StoreData {
+  rpc Store (StoreDataRequest) returns (StoreDataResponse) {}
+}
+
+message StoreDataRequest {
+  Data data = 1;
+}
+
+message StoreDataResponse {}
