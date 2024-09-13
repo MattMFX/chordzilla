@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DefaultLoadHostListImpl implements LoadHostList {
     @Override
-    public List<Host> loadHostList(String filePath) {
+    public List<Host> load(String filePath) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             File jsonFile = new File(filePath);
@@ -23,7 +23,7 @@ public class DefaultLoadHostListImpl implements LoadHostList {
 
             return knownHosts.knownHosts();
         } catch (IOException e) {
-            e.printStackTrace(); // TODO Melhorar tratamento de exceção
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

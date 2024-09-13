@@ -2,11 +2,9 @@ package br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl;
 
 import br.edu.ufabc.mfmachado.chordzilla.core.node.Node;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
-import br.edu.ufabc.mfmachado.chordzilla.proto.LeaveChordGrpc;
-import br.edu.ufabc.mfmachado.chordzilla.proto.LeaveChordRequest;
-import br.edu.ufabc.mfmachado.chordzilla.proto.LeaveChordResponse;
+import br.edu.ufabc.mfmachado.chordzilla.proto.*;
 import br.edu.ufabc.mfmachado.chordzilla.server.utils.NodeUtils;
-import io.grpc.Status;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ public class LeaveChordServiceImpl extends LeaveChordGrpc.LeaveChordImplBase {
             } else {
                 selfNode.setPredecessor(newPredecessor);
             }
-
             LOGGER.info(
                     "Updated predecessor. Node {} now has successor {} and predecessor {}.",
                     selfNode.id(),
@@ -45,6 +42,5 @@ public class LeaveChordServiceImpl extends LeaveChordGrpc.LeaveChordImplBase {
                             .asRuntimeException()
             );
         }
-
     }
 }

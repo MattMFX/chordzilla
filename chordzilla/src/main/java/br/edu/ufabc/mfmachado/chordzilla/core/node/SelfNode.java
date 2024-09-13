@@ -24,7 +24,12 @@ public class SelfNode implements Node {
 
     public static SelfNode init(BigInteger id, String ip, Integer port) {
         if (InternalNode.id != null || InternalNode.ip != null || InternalNode.port != null) {
-            LOGGER.info("Node already initialized. Returning existing instance.");
+            LOGGER.info(
+                    "Node already initialized. Running on host {}:{} with ID {}.",
+                    InternalNode.ip,
+                    InternalNode.port,
+                    InternalNode.id
+            );
             return getInstance();
         }
 
@@ -33,6 +38,10 @@ public class SelfNode implements Node {
         InternalNode.ip = ip;
         InternalNode.port = port;
         return new SelfNode();
+    }
+
+    public static boolean isInitialized() {
+        return Objects.nonNull(InternalNode.id) && Objects.nonNull(InternalNode.ip) && Objects.nonNull(InternalNode.port);
     }
 
     /**
@@ -100,6 +109,10 @@ public class SelfNode implements Node {
 
     public byte[] popData(BigInteger key) {
         return InternalNode.data.remove(key);
+    }
+
+    public byte[] getData(BigInteger key) {
+        return InternalNode.data.get(key);
     }
 
     public List<BigInteger> getKeys() {

@@ -1,12 +1,13 @@
 package br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl;
 
-import br.edu.ufabc.mfmachado.chordzilla.client.StoreDataClient;
+import br.edu.ufabc.mfmachado.chordzilla.api.handler.StoreHandler;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.Node;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
 import br.edu.ufabc.mfmachado.chordzilla.proto.Data;
 import br.edu.ufabc.mfmachado.chordzilla.proto.StoreDataGrpc;
 import br.edu.ufabc.mfmachado.chordzilla.proto.StoreDataRequest;
 import br.edu.ufabc.mfmachado.chordzilla.proto.StoreDataResponse;
+import br.edu.ufabc.mfmachado.chordzilla.server.client.ChordClientManager;
 import br.edu.ufabc.mfmachado.chordzilla.server.utils.NodeUtils;
 import io.grpc.*;
 import io.grpc.stub.StreamObserver;
@@ -20,6 +21,7 @@ public class StoreDataServiceImpl extends StoreDataGrpc.StoreDataImplBase {
 
     @Override
     public void store(StoreDataRequest request, StreamObserver<StoreDataResponse> responseObserver) {
+        ChordClientManager clientManager = null;
         try {
             LOGGER.info("Received data store request for ID {}", request.getData().getKey());
             SelfNode selfNode = SelfNode.getInstance();
@@ -27,10 +29,14 @@ public class StoreDataServiceImpl extends StoreDataGrpc.StoreDataImplBase {
 
             if (selfNode.isOwner(key)) {
                 selfNode.addData(key, request.getData().getValue().toByteArray());
-                LOGGER.info("Data stored successfully");
+                LOGGER.info("Data stored successfully with key {}.", key);
             } else {
                 LOGGER.info("Data does not belong to this node, forwarding to successor.");
-                store(selfNode.getSuccessor(), request.getData());
+                clientManager = ChordClientManager.withHost(
+                        selfNode.getSuccessor().ip(),
+                        selfNode.getSuccessor().port()
+                );
+                clientManager.getStoreDataClient().storeData(request.getData().getKey(), request.getData().getValue());
             }
 
             responseObserver.onNext(StoreDataResponse.newBuilder().build());
@@ -42,26 +48,10 @@ public class StoreDataServiceImpl extends StoreDataGrpc.StoreDataImplBase {
                             .withDescription("An error ocurred while storing data.")
                             .asRuntimeException()
             );
-        }
-    }
-
-    /**
-     * Transfere para o novo nó os dados que pertencem a ele.
-     */
-    private void store(Node successor, Data data) {
-        Channel channel = null;
-        try {
-            channel = getChannel(successor.ip(), successor.port());
-            StoreDataClient storeDataClient = new StoreDataClient(channel);
-            storeDataClient.store(data.getKey(), data.getValue().toByteArray());
         } finally {
-            if (channel instanceof ManagedChannel) {
-                ((ManagedChannel) channel).shutdown();
+            if (clientManager != null) {
+                clientManager.closeClient();
             }
         }
-    }
-
-    private Channel getChannel(String ip, Integer port) {
-        return Grpc.newChannelBuilder(NodeUtils.getNodeAdress(ip, port), InsecureChannelCredentials.create()).build();
     }
 }

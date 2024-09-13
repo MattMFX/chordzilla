@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -29,7 +30,6 @@ public class GrpcServer {
             return;
         }
 
-        LOGGER.info("Starting gRPC server...");
         for (int i = 0; i < RETRY; i++) {
             try {
                 startGrpcServer(port);
@@ -77,21 +77,25 @@ public class GrpcServer {
     }
 
     private void startGrpcServer(int port) throws IOException {
-        ServerBuilder<?> serverBuilder = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create());
+        ServerBuilder<?> serverBuilder = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create())
+                .maxInboundMessageSize(1024 * 1024 * 1024)
+                .addService(ProtoReflectionService.newInstance());
+
         services.forEach(serverBuilder::addService);
-        serverBuilder.addService(ProtoReflectionService.newInstance());
         GrpcServer.server = serverBuilder.build();
+
         server.start();
         stopServerOnApplicationShutdown();
         GrpcServer.isRunning = true;
-        LOGGER.info("The gRPC server started! Listening on port {}", port);
     }
 
     private void stopServerOnApplicationShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            LOGGER.error("*** shutting down gRPC server since JVM is shutting down");
-            GrpcServer.stop();
-            LOGGER.error("*** server shut down");
+            if (GrpcServer.isRunning()) {
+                LOGGER.error("*** shutting down gRPC server since JVM is shutting down");
+                GrpcServer.stop();
+                LOGGER.error("*** server shut down");
+            }
         }));
     }
 }

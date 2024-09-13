@@ -1,4 +1,4 @@
-package br.edu.ufabc.mfmachado.chordzilla.client;
+package br.edu.ufabc.mfmachado.chordzilla.server.client.impl;
 
 import br.edu.ufabc.mfmachado.chordzilla.proto.NodeInformation;
 import br.edu.ufabc.mfmachado.chordzilla.proto.NotifyPredecessorNodeGoneGrpc;
@@ -8,11 +8,9 @@ import io.grpc.Channel;
 
 public class NotifyPredecessorNodeGoneClient {
     private final NotifyPredecessorNodeGoneGrpc.NotifyPredecessorNodeGoneBlockingStub blockingStub;
-    private final NotifyPredecessorNodeGoneGrpc.NotifyPredecessorNodeGoneStub asyncStub;
 
     public NotifyPredecessorNodeGoneClient(Channel channel) {
         this.blockingStub = NotifyPredecessorNodeGoneGrpc.newBlockingStub(channel);
-        this.asyncStub = NotifyPredecessorNodeGoneGrpc.newStub(channel);
     }
 
     public void nodeGone(NodeInformation successor) {

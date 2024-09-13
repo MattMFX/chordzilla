@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "commons.proto";
+
+option java_multiple_files = true;
+option java_package = "br.edu.ufabc.mfmachado.chordzilla.proto";
+
+service RetrieveData {
+  rpc Retrieve (RetrieveDataRequest) returns (RetrieveDataResponse) {}
+}
+
+message RetrieveDataRequest {
+  NodeInformation node = 1;
+  string key = 2;
+}
+
+message RetrieveDataResponse {}

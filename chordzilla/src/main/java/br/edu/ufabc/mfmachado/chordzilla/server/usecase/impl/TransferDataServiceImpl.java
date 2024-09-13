@@ -18,9 +18,9 @@ public class TransferDataServiceImpl extends TransferDataGrpc.TransferDataImplBa
     public void transfer(TransferDataRequest request, StreamObserver<TransferDataResponse> responseObserver) {
         try {
             LOGGER.info("Received data transfer request");
-
             SelfNode selfNode = SelfNode.getInstance();
             request.getDataList().forEach(data -> selfNode.addData(new BigInteger(data.getKey()), data.getValue().toByteArray()));
+            LOGGER.info("Data transferred successfully.");
 
             responseObserver.onNext(TransferDataResponse.newBuilder().build());
             responseObserver.onCompleted();

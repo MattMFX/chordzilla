@@ -1,4 +1,4 @@
-package br.edu.ufabc.mfmachado.chordzilla.client;
+package br.edu.ufabc.mfmachado.chordzilla.server.client.impl;
 
 import br.edu.ufabc.mfmachado.chordzilla.proto.LeaveChordGrpc;
 import br.edu.ufabc.mfmachado.chordzilla.proto.LeaveChordRequest;
@@ -8,11 +8,9 @@ import io.grpc.Channel;
 
 public class LeaveChordClient {
     private final LeaveChordGrpc.LeaveChordBlockingStub blockingStub;
-    private final LeaveChordGrpc.LeaveChordStub asyncStub;
 
     public LeaveChordClient(Channel channel) {
         this.blockingStub = LeaveChordGrpc.newBlockingStub(channel);
-        this.asyncStub = LeaveChordGrpc.newStub(channel);
     }
 
     public void leaveChord(NodeInformation predecessor) {

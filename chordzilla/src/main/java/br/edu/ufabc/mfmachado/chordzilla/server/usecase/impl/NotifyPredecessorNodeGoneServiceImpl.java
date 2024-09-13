@@ -2,6 +2,7 @@ package br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl;
 
 import br.edu.ufabc.mfmachado.chordzilla.core.node.Node;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
+import br.edu.ufabc.mfmachado.chordzilla.proto.NotifyPredecessorNewNodeResponse;
 import br.edu.ufabc.mfmachado.chordzilla.proto.NotifyPredecessorNodeGoneGrpc;
 import br.edu.ufabc.mfmachado.chordzilla.proto.NotifyPredecessorNodeGoneRequest;
 import br.edu.ufabc.mfmachado.chordzilla.proto.NotifyPredecessorNodeGoneResponse;
@@ -35,6 +36,9 @@ public class NotifyPredecessorNodeGoneServiceImpl extends NotifyPredecessorNodeG
                     Objects.isNull(selfNode.getSuccessor()) ? null : selfNode.getSuccessor().id(),
                     Objects.isNull(selfNode.getPredecessor()) ? null : selfNode.getPredecessor().id()
             );
+
+            responseObserver.onNext(NotifyPredecessorNodeGoneResponse.newBuilder().build());
+            responseObserver.onCompleted();
         } catch (Exception e) {
             LOGGER.error("An error ocurred while receiving notification of node gone: {}", e.getMessage(), e);
             responseObserver.onError(

@@ -1,6 +1,7 @@
 package br.edu.ufabc.mfmachado.chordzilla.server.usecase.impl;
 
-import br.edu.ufabc.mfmachado.chordzilla.client.NotifyPredecessorNewNodeClient;
+import br.edu.ufabc.mfmachado.chordzilla.server.client.ChordClientManager;
+import br.edu.ufabc.mfmachado.chordzilla.server.client.impl.NotifyPredecessorNewNodeClient;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.ChordNode;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.Node;
 import br.edu.ufabc.mfmachado.chordzilla.core.node.SelfNode;
@@ -19,16 +20,18 @@ public class AcknowledgeJoinServiceImpl extends AcknowledgeJoinGrpc.AcknowledgeJ
 
     @Override
     public void joinOk(AcknowledgeJoinRequest request, StreamObserver<AcknowledgeJoinResponse> responseObserver) {
+        ChordClientManager clientManager = null;
         try {
             LOGGER.info("Received confirmation to join the chord");
             ChordNode predecessor = NodeUtils.mapToNode(request.getPredecessor());
             ChordNode successor = NodeUtils.mapToNode(request.getSuccessor());
-            SelfNode selfNode = SelfNode.getInstance();
 
+            SelfNode selfNode = SelfNode.getInstance();
             selfNode.setPredecessor(predecessor);
             selfNode.setSuccessor(successor);
 
-            notifyPredecessor(NodeUtils.mapToNodeInformation(selfNode), selfNode.getPredecessor());
+            clientManager = ChordClientManager.withHost(predecessor.ip(), predecessor.port());
+            clientManager.getNotifyPredecessorNewNodeClient().newNode(NodeUtils.mapToNodeInformation(selfNode));
 
             responseObserver.onNext(AcknowledgeJoinResponse.newBuilder().build());
             responseObserver.onCompleted();
@@ -41,23 +44,10 @@ public class AcknowledgeJoinServiceImpl extends AcknowledgeJoinGrpc.AcknowledgeJ
                             .withDescription("An unexpected error ocurred while acknowledging the join")
                             .asRuntimeException()
             );
-        }
-    }
-
-    private void notifyPredecessor(NodeInformation newNode, Node predecessor) {
-        Channel channel = null;
-        try {
-            channel = getChannel(predecessor.ip(), predecessor.port());
-            NotifyPredecessorNewNodeClient client = new NotifyPredecessorNewNodeClient(channel);
-            client.newNode(newNode);
         } finally {
-            if (channel instanceof ManagedChannel) {
-                ((ManagedChannel) channel).shutdown();
+            if (clientManager != null) {
+                clientManager.closeClient();
             }
         }
-    }
-
-    private Channel getChannel(String ip, Integer port) {
-        return Grpc.newChannelBuilder(NodeUtils.getNodeAdress(ip, port), InsecureChannelCredentials.create()).build();
     }
 }
