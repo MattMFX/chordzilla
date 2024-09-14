@@ -1,7 +1,7 @@
 package br.edu.ufabc.mfmachado.codehub.usecase.impl;
 
-import br.edu.ufabc.mfmachado.chordzilla.api.handler.JoinChordHandler;
 import br.edu.ufabc.mfmachado.chordzilla.api.factory.JoinChordHandlerFactory;
+import br.edu.ufabc.mfmachado.chordzilla.api.handler.JoinChordHandler;
 import br.edu.ufabc.mfmachado.chordzilla.api.model.ChordHost;
 import br.edu.ufabc.mfmachado.chordzilla.core.hash.HashType;
 import br.edu.ufabc.mfmachado.codehub.entity.Host;

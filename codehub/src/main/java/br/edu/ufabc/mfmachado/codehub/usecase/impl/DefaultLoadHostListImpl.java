@@ -4,7 +4,6 @@ import br.edu.ufabc.mfmachado.codehub.entity.Host;
 import br.edu.ufabc.mfmachado.codehub.entity.KnownHosts;
 import br.edu.ufabc.mfmachado.codehub.usecase.LoadHostList;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;

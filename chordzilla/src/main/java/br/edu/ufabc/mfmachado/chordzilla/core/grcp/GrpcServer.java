@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class GrpcServer {
 
     private boolean serverIsRunning() {
         if (GrpcServer.isRunning()) {
-            LOGGER.info("gRPC server is already running.");
+            LOGGER.debug("gRPC server is already running.");
             return true;
         }
 
@@ -67,7 +66,7 @@ public class GrpcServer {
     public static void stop() {
         try {
             if (server != null) {
-                LOGGER.info("Shutting down gRPC server...");
+                LOGGER.debug("Shutting down gRPC server...");
                 server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
                 isRunning = false;
             }
@@ -92,9 +91,9 @@ public class GrpcServer {
     private void stopServerOnApplicationShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (GrpcServer.isRunning()) {
-                LOGGER.error("*** shutting down gRPC server since JVM is shutting down");
+                LOGGER.debug("*** shutting down gRPC server since JVM is shutting down");
                 GrpcServer.stop();
-                LOGGER.error("*** server shut down");
+                LOGGER.debug("*** server shut down");
             }
         }));
     }

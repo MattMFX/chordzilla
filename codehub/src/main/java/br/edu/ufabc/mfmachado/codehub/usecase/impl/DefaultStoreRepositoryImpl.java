@@ -7,7 +7,6 @@ import br.edu.ufabc.mfmachado.codehub.usecase.StoreRepository;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
-import org.apache.logging.log4j.util.Strings;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

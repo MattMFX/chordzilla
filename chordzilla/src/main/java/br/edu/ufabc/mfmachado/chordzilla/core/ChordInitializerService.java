@@ -80,7 +80,7 @@ public class ChordInitializerService {
             }
 
             BigInteger id = hashStrategy.hash(String.join(":", ip, port.toString()).getBytes());
-            LOGGER.info("Starting node...");
+            LOGGER.debug("Starting node...");
             return SelfNode.init(id, ip, port);
         } catch (Exception e) {
             LOGGER.error("Error starting chord node: {}", e.getMessage(), e);
@@ -116,7 +116,7 @@ public class ChordInitializerService {
                 Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
                 for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                     if (inetAddress instanceof Inet4Address && inetAddress.isLoopbackAddress()) {
-                        System.out.println("Found IP Address: " + inetAddress.getHostAddress());
+                        LOGGER.debug("Found IP Address: {}", inetAddress.getHostAddress());
                         ipList.add((Inet4Address) inetAddress);
                     }
                 }
